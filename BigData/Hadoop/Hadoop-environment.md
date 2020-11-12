@@ -124,59 +124,167 @@
 
    
 
-4. 官网走一遍
+4. 官网走一遍（本地运行模式）
 
-   本地运行模式，单点设置（官方grep案例）
+   1. 本地运行模式，单点设置（官方grep案例）
 
-    vi`etc/hadoop/hadoop-env.sh` 
+       vi`etc/hadoop/hadoop-env.sh` 
 
-    export JAVA_HOME=/opt/module/jdk1.8.0_271
+       export JAVA_HOME=/opt/module/jdk1.8.0_271
 
-   保存后执行  bin/hadoop
+      保存后执行  bin/hadoop
 
-   在hadoop2.7.2文件下面创建一个input文件夹
+      在hadoop2.7.2文件下面创建一个input文件夹
 
-   mkdir input
+      mkdir input
 
-   将hadoop的xml配置文件复制到input
+      将hadoop的xml配置文件复制到input
 
-   cp etc/hadoop/*.xml input
+      cp etc/hadoop/*.xml input
 
-   执行share目录下的mapreduce程序
+      执行share目录下的mapreduce程序
 
-   bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.9.2.jar grep input output 'dfs[a-z.]+'
+      bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.9.2.jar grep input output 'dfs[a-z.]+'
 
-   查看输出结果
+      查看输出结果
 
-   cat output/*
+      cat output/*
+
+      
+
+      2. 官方WordCount案例
+
+      创建在hadoop2.7.2文件下面创建一个wcinput文件夹
+
+      mkdir wcinput
+
+      在wcinput文件下创建一个wc.input
+
+      cd wcinput
+
+      编辑wc.input文件
+
+      vi /wc.input
+
+      
+
+      在文件中中输入如下内容
+
+      hadoop yarn
+
+      hadoop mapreduce
+
+      atguigu
+
+      atguigu
+
+      
+
+      保存并退出
+
+      回到/opt/module/hadoop2.7.2
+
+      执行    bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar wordcount wcinput wcoutpt
+
+      cat wcoutput/*
 
    
 
-   官方WordCount案例
+   以上都是hadoop本地运行模式
 
-   创建在hadoop2.7.2文件下面创建一个wcinput文件夹
-
-   在wcinput文件下创建一个wc.input
-
-   变价wc.input文件
-
-   在文件中中输入如下内容
+   只用到了mapreduce，mapreduce跑在了本地存储和资源调度
 
    
 
+5. 伪分布运行模式（只有一个节点的分布式）
+
+   1. 配置hadoop-env.sh
+
+      在/opt/module/hadoop2.7.2目录下
+
+      vi etc/hadoop/hadoop-env.sh
+
+      export JAVA_HOME=/opt/module/jdk1.xxxx
+
+      保存后执行  bin/hadoop
+
+      
+
+      2.配置core-site.xml
+
+      在/opt/module/hadoop2.7.2目录下
+
+      vi etc/hadoop/core-site.xml
+
+      <configuration>
+
+      <!--指定HDFS中NameNode的地址-->
+
+      ​    <property>
+      ​        <name>fs.defaultFS</name>
+      ​        <value>hdfs://hadoop101:9000</value>
+      ​    </property>
+
+      <!--指定Hadoop运行时产生文件的存储目录-->
+
+        <property>
+              <name>hadoop.tmp.dir</name>
+              <value>/opt/module/hadoop-2.7.2/data/tmp</value>
+          </property>
+
+      </configuration>
+
+      
+
+      3.配置hdfs-site.xml
+
+      在/opt/module/hadoop2.7.2目录下
+
+      vi etc/hadoop/hdfs-site.xml
+
+      <configuration>
+
+      <!--指定HDFS副本数量为1-->
+
+      ​    <property>
+      ​        <name>dfs.replication</name>
+      ​        <value>1</value>
+      ​    </property>
+      </configuration>
+
+      4.启动集群
+
+      格式化NameNode（第一次启动时格式化，以后就不要总格式化）
+
+      在hadoop2.7.2目录下   bin/hdfs namenode -format
+
+      启动NameNode
+
+      hadoop-daemon.sh start namenode
+
+      启动DataNode
+
+      hadoop-daemon.sh start datanode
+
+      5.查看集群
+
+      查看是否启动成功
+
+      在hadoop2.7.2目录下
+
+      jps
+
+      如果看到namenode和datanode就启动成功
+
+      
+
    
 
-   保存并退出
+6. xxxxx
+
+7. xxxx
 
    
-
-5. xxx
-
-6. x
-
-7. xxx
-
-8. xxxx
 
 #### 3. 安装Hadoop
 
