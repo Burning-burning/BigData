@@ -546,6 +546,200 @@ export JAVA_HOME=/opt/module/jdk1.8.0_271
 
 scp -r hadoop102:/opt/module/hadoop-2.7.2/etc hadoop104:/opt/module/hadoop-2.7.2
 
+格式化集群，在namenode节点格式化(hadoop102)
+
+hdfs namenode -format
+
+hadoop-daemon.sh start namenode
+
+hadoop-daemon.sh start datanode
+
+
+
+(hadoop103,hadoop104)
+
+hadoop-daemon.sh start datanode
+
+
+
+hadoop104:
+
+hadoop-daemon.sh start secondarynamenode
+
+###### 3.3.3 SSH无密登录配置（SSH以非对称加密实现身份验证：用a加密，用b解密）
+
+ssh：secure shell：shell是和系统沟通的桥梁
+
+群起集群需要使用ssh免密登录
+
+hadoop102 需要与hadoop103通信，hadoop102登录hadoop103
+
+ssh-keygen -t rsa
+
+回车
+
+回车
+
+回车
+
+ssh-copy-id hadoop103
+
+ssh hadoop103
+
+自己登录自己，hadoop102免密
+
+ssh-copy-id hadoop102
+
+ssh hadoop102
+
+hadoop103
+
+ssh-keygen -t rsa
+
+ssh-copy-id hadoop102
+
+ssh hadoop102
+
+需要hadoop2到hadoop2，hadoop2到hadoop3，hadoop2到hadoop4，hadoop3到hadoop3，hadoop3到hadoop2，hadoop3到hadoop4，hadoop4到hadoop4，hadoop4到hadoop3，hadoop4到hadoop2
+
+简单的解决方案
+
+ssh-keygen -t rsa
+
+ssh-copy-id hadoop102
+
+scp -r hadoop102: .ssh hadoop103
+
+###### 3.3.4 群起集群
+
+停止上一次启动的namenode，datanode并且删除data和log
+
+配置从机：hadoop102，103，104
+
+cd /opt/module/hadoop-2.7.2/etc/hadoop
+
+vi slaves
+
+hadoop102
+
+hadoop103
+
+hadoop104
+
+
+
+hadoop102执行   start-dfs.sh
+
+hadoop103启动yarn（哪台机器装的resourcemanager，就在哪台机器上面启动）
+
+start-yarn.sh
+
+
+
+hadoop102:50070  出现三台nodes
+
+hadoop103:8088 出现三台nodes即为成功
+
+为了测试，可以跑一个wordcount
+
+在Hadoop102    cd /opt/module/hadoop
+
+hadoop fs -put wcinput /
+
+hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-example.jar wordcount /wcinput /output
+
+
+
+
+
+jps指令查看
+
+配置历史服务器、日志聚集
+
+在hadoop103    stop-yarn.sh
+
+hadoop102   stop-dfs.sh
+
+cd etc/hadoop
+
+vi mapred-site.xml
+
+<!--历史服务器端地址-->
+
+<property>
+
+​	<name>mapreduce.jobhistory.address</name>
+
+​	<value>hadoop104:10020</value>
+
+</property>
+
+<!--历史服务器web端地址-->
+
+<property>
+
+	<name>mapreduce.jobhistory.webapp.address</name>
+	
+	<value>hadoop104:19888</value>
+
+</property>
+
+
+
+vi yarn-site.xml
+
+<!--日志聚集功能-->
+
+<property>
+
+	<name>yarn.log-aggregation-enable</name>
+	
+	<value>true</value>
+
+</property>
+
+<!--日志保留时间设置七天-->
+
+<property>
+
+	<name>yarn.log-aggregation.retain-seconds</name>
+	
+	<value>604800</value>
+
+</property>
+
+hadoop103,hadoop104 同步
+
+scp -r hadoop102: /opt/module/hadoop/etc hadoop104:/opt/module/hadoop
+
+hadoop102
+
+start-dfs.sh
+
+hadoop103
+
+start-yarn.sh
+
+hadoop104启动历史服务器
+
+mr-jobhistory-daemon.sh start historyserver
+
+jps
+
+hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-example.jar wordcount /wcinput /output
+
+
+
+###### 3.3.5 集群时间同步
+
+找一台机器，作为时间服务器，所有的机器与这台集群时间进行定时的同步，比如，每隔十分钟，同步一次时间
+
+
+
+###### 3.3.6 xxx
+
+
+
 #### 3. 安装Hadoop
 
  
