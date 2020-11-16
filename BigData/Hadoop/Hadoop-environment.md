@@ -734,12 +734,69 @@ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-example.jar wordcount /wcinpu
 
 找一台机器，作为时间服务器，所有的机器与这台集群时间进行定时的同步，比如，每隔十分钟，同步一次时间
 
+su -切换到root
+
+检查ntp是否安装
+
+rpm -qa|grep ntp
+
+没安装的话yum install -y ntp
+
+查看是否开始ntp服务(停止ntp服务)
+
+systemctl ntpd stop
+
+systemctl status ntpd
+
+修改ntp配置文件
+
+vi /etc/ntp.conf
+
+#restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap为
+restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap
 
 
-###### 3.3.6 xxx
+
+server 0.centos.pool.ntp.org iburst
+server 1.centos.pool.ntp.org iburst
+server 2.centos.pool.ntp.org iburst
+server 3.centos.pool.ntp.org iburst为
+#server 0.centos.pool.ntp.org iburst
+#server 1.centos.pool.ntp.org iburst
+#server 2.centos.pool.ntp.org iburst
+#server 3.centos.pool.ntp.org iburst
+
+添加
+
+server 127.127.1.0
+fudge 127.127.1.0 stratum 10
+
+保存退出
+
+vi /etc/sysconfig/ntpd
+
+SYNC_HWCLOCK=yes
 
 
 
-#### 3. 安装Hadoop
+重新启动
+
+systemctl ntpd start
+
+开机自启动
+
+chkconfig ntpd on
+
+其他机器配置（root）
+
+crontab -e
+
+*/10 * * * * /usr/sbin/ntpdate hadoop102
+
+date -s "2017-9-11 11:11:11"
+
+date
+
+
 
  
