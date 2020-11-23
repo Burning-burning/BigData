@@ -155,6 +155,56 @@ Partition案例实操
 
 自定义分区，一个分区对应一个ReduceTask，对应一个输出文件
 
+##### WritableComparable排序
+
+见github
+
+在实现排序的基础上实现分区，见github
+
+##### Combiner合并
+
+Combiner是MR程序中的Mapper和Reducer之外的一种组件
+
+Combiner组件的父类就是Reducer
+
+Combiner和Reducer的区别在于运行的位置
+
+（1）Combiner是在每一个MapTask的节点运行
+
+（2）Reducer是接收全局所有Mapper的输出结果
+
+**Combiner是对每一个MapTask的输出进行局部汇总，减小网络传输量**
+
+**Combiner能够应用的前提是不能影响最终的业务逻辑**，而且，Combiner的输出kv应该跟Reducer的输入kv类型要对应起来
+
+##### GroupingComparator分组（辅助排序）
+
+对Reduce阶段的数据根据某一个或者几个字段进行分组
+
+自定义WritableCompatator
+
+mapreduce是先排序在分组
+
+案例实操见github
+
+
+
+#### 4. OutputFormat
+
+inputFormat：文件到kv
+
+outputFormat：kv到文件
+
+默认输出：TextOutputFormat
+
+自定义OutputFormat：见gitHub
+
+#### 5. ReduceJoin
+
+通过mapreduce处理sql表
+
+
+
 
 
 
